@@ -39,12 +39,11 @@ def main():
 
     while generations > 0:
         if time.time() - t >= 0.1:
-            drawBoard(board)
+            if generations % sieve[random.randint(4, highestRandom-1)] == 0:
+                seed(board)
             board = gen(board)
             t = time.time()
             #random generation -- sometimes just we get a few beacons and the fun stops!
-            if generations % sieve[random.randint(4, highestRandom-1)] == 0:
-                seed(board)
             generations -= 1
     print()
 
@@ -110,6 +109,7 @@ def gen(board):
     if killedsomething < 4:
         board = seed(board)
 
+    drawBoard(board)
     return board
 
 #Quickly generates a set of primes for the random generation.
