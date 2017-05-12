@@ -17,28 +17,19 @@ import time, numpy, random, os
 def main():
     boardSize = 0
     print("Welcome to the game of life! We will make some creatures and see how long they survive!\n")
-    try:
-        boardSize = int(input("First enter the size of the board: \n\
-(enter n where the grid size will be n x n*2 - at least 10.)"))
-    except:
-        ValueError("Numbers only!\n")
-        main()
-    if boardSize < 10:
-        print("That's too small!\n")
-        main()
+    boardSize = getBoardSize()
     print("\n")
     generations = int(input("Now enter how many generations you want the game to run: "))
-    board = seed(numpy.zeros((boardSize, boardSize*2), dtype=numpy.str))
-
     #Hypothetically could make the speed variable, so check the time.
-    t = time.time()
+    speed, t = getSpeed(), time.time()
+    board = seed(numpy.zeros((boardSize, boardSize*2), dtype=numpy.str))
 
     #Using primes for the generational random -- makes it more random.
     sieve = primeSieve(2, 50)
     highestRandom = len(sieve)
 
     while generations > 0:
-        if time.time() - t >= 0.1:
+        if time.time() - t >= speed:
             if generations % sieve[random.randint(4, highestRandom-1)] == 0:
                 seed(board)
             board = gen(board)
@@ -49,14 +40,23 @@ def main():
 
 def drawBoard(board):
     os.system("clear")
+    killedsomething = 0
+    for x in range (0, len(board)):
+        for y in range (0, len(board)*2):
+            if board[x][y] == "k":
+                board[x][y] = " "
+                killedsomething += 1
+            elif board[x][y] == "g":
+                board[x][y] = u'\u2588'
+            elif y == 0 or y == len(board)*2 - 1:
+                board[x][y] = "|"
+            elif x == 0 or x == len(board) - 1:
+                board[x][y] = "-"
     print("\n"
                 .join(["".join(['{:1}'.format(i) for i in row]) for row in board]))
-    for i in range (0, len(board)):
-        for j in range (0, len(board)*2):
-            if j == 0 or j == len(board)*2 - 1:
-                board[i][j] = "|"
-            elif i == 0 or i == len(board) - 1:
-                board[i][j] = "-"
+    #Another method of keeping the fun going just a little longer.
+    if killedsomething < 4:
+        board = seed(board)
 
 def seed(board):
     #Since we aren't inputting starting positions, we generate a semi-random number
@@ -95,20 +95,6 @@ def gen(board):
             elif neighbors == 3 and board[x][y] != u'\u2588':
                 board[x][y] = "g"
 
-    #Now replace any kill or generate cell so all changes happen simulataneously.
-    killedsomething = 0
-    for x in range (1, len(board)-1):
-        for y in range (1, len(board)*2-1):
-            if board[x][y] == "k":
-                board[x][y] = " "
-                killedsomething += 1
-            if board[x][y] == "g":
-                board[x][y] = u'\u2588'
-
-    #Another method of keeping the fun going just a little longer.
-    if killedsomething < 4:
-        board = seed(board)
-
     drawBoard(board)
     return board
 
@@ -128,5 +114,27 @@ def primeSieve(a, b):
             sieve.append(i)
 
     return sieve
+
+def getSpeed():
+    speed = input("Run fast (f) or slow (s) or normal (enter)?")
+    if speed in "f":
+        speed = 0.01
+    elif speed in "s":
+        speed = 0.5
+    else:
+        speed = 0.1
+    return speed
+
+def getBoardSize():
+    try:
+        boardSize = int(input("First enter the size of the board: \n\
+(enter n where the grid size will be n x n*2 - at least 10.)"))
+    except:
+        ValueError("Numbers only!\n")
+        main()
+    if boardSize < 10:
+        print("That's too small!\n")
+        main()
+    return boardSize
 
 main()
