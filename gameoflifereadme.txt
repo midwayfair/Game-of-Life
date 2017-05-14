@@ -9,3 +9,8 @@
 #user change the speed of generation.                                          #
 #See https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life for rules etc.      #
 ################################################################################
+
+Uses a unicode character above 128, and the clear function for Unix/Linux.
+
+These aspects may have to be changed to run on some systems. E.g., the block
+character doesn’t display in Cloud9 IDE.ß
